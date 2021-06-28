@@ -39,6 +39,11 @@ const Navbar =()=> {
                Find Home
             </Menu.Item>
           </Link>
+          <Link to="/prices">
+            <Menu.Item>
+               Prices
+            </Menu.Item>
+          </Link>
           
           <Link to='/examples'>
             <Menu.Item>Examples</Menu.Item>
