@@ -35,15 +35,12 @@ const dummyData =   [
         const getPrices = async () => {
         try{
             // TODO: hookup to actual API
-            let res = await axios.get('/api/prices')
+            let res = await axios.get('/api/properties/city_cost')
             // since api is not hook we will not get here instead goes
             // to catch block
             const formattedData =  normalizeChartData(res.data)
             setPrices(formattedData)
-
         } catch(err){
-            const formattedData1 =  normalizeChartData(apiDummyData)
-            setPrices(formattedData1)
             console.log(err)
             console.log(err.response)
         }
