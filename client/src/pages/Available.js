@@ -7,10 +7,14 @@ const Available = () => {
     const [agents, setAgents] = useState([])
     const [totalPages, setTotalPages] = useState(0)
     const [page, setPage] = useState(1)
+
     useEffect(()=>{
-       
-        getAgentsProperties()
-    },{})
+        getAgentsProperties(page)
+    },[page])
+
+    useEffect(()=>{
+        getAgentsProperties(page)
+    },[])
 
     const normalizeData = (agentProperties) => {
 
@@ -46,32 +50,31 @@ const Available = () => {
             }
             )
         })
-        console.log(agentsData)
-        console.log('normalize data Done, setAgent (ie render to dom)')
         setAgents(agentsData)
     }
 
-    const getAgentsProperties = async()=> {
+    const getAgentsProperties = async(page)=> {
         try {
-            console.log('before api call')
+            console.log('page at axios:', page)
+            setPage(page)
             let res = await axios.get(`/api/properties?page=${page}`)
-            console.log('after api call, starting to normalize data')
             setTotalPages(res.data.total_pages)
             normalizeData(res.data.agents)
         } catch (error) {
             console.log(error)
         }
     }
-    const handlePageClick = (page) => {
-        console.log(page)
-        setPage(page)
-        getAgentsProperties()
+    const handlePageClick = (clickedPage) => {
+        console.log('page at click:', clickedPage)
+         // not going page right here
+         setPage(clickedPage)
+         //getAgentsProperties(clickedPage)
         // want to do api call here
     }
     return (
         <>
-            <h1>Available pages:{totalPages}</h1>
-            <PaginationTabs handleClick={handlePageClick}/> 
+            <h1>Available pages: {totalPages} pageState: {page}</h1>
+            <PaginationTabs currentPage={page} totalPages={totalPages} handleClick={handlePageClick}/> 
             {agents.map(a => (
                 <AgentProperties key={Math.random()} {...a} />
             ))
