@@ -1,35 +1,27 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import AgentProperties from '../components/AgentProperties';
+import PaginationTabs from '../components/PaginationTabs';
 
 const Available = () => {
     const [agents, setAgents] = useState([])
+    const [totalPages, setTotalPages] = useState(0)
+    const [page, setPage] = useState(1)
     useEffect(()=>{
+       
         getAgentsProperties()
     },{})
 
     const normalizeData = (agentProperties) => {
-        // STEP 1 GET UNIQ IDS OF AGENTS
-            // Step 1a
-            // how do you go through my array of objects 
-            // and return array of agent_id =[1,1,2,2,]
-            // MAP
-
-             // Step 2a
-            // take array of numbers and create array of 
-            // uniq numbers
-            // [...new Set(x)]
 
         const uniqAgentIDS =[...new Set(agentProperties.map(p=> p.agent_id))]
 
         console.log(uniqAgentIDS)
         const agentsData = []
-        // STEP 2 go through that array and match all my agents
-        // with  agentProperties array
+ 
         uniqAgentIDS.forEach( id => {
             // I have id of the agent
             let properties = agentProperties.filter( ap => ap.agent_id === id)
-            console.log(properties)
               // still in for each loop push each agent {fullName, email properties}
              // object to agents array
             let {agent_id, first_name, last_name, email} = properties[0]
@@ -55,22 +47,33 @@ const Available = () => {
             )
         })
         console.log(agentsData)
+        console.log('normalize data Done, setAgent (ie render to dom)')
         setAgents(agentsData)
     }
 
     const getAgentsProperties = async()=> {
         try {
-            let res = await axios.get('/api/properties')
-            normalizeData(res.data)
+            console.log('before api call')
+            let res = await axios.get(`/api/properties?page=${page}`)
+            console.log('after api call, starting to normalize data')
+            setTotalPages(res.data.total_pages)
+            normalizeData(res.data.agents)
         } catch (error) {
             console.log(error)
         }
     }
+    const handlePageClick = (page) => {
+        console.log(page)
+        setPage(page)
+        getAgentsProperties()
+        // want to do api call here
+    }
     return (
         <>
-            <h1>Available</h1>
+            <h1>Available pages:{totalPages}</h1>
+            <PaginationTabs handleClick={handlePageClick}/> 
             {agents.map(a => (
-                <AgentProperties {...a} />
+                <AgentProperties key={Math.random()} {...a} />
             ))
             }
 
